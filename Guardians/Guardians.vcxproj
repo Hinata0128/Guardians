@@ -162,6 +162,9 @@
     <ClCompile Include="Source\DirectX\CDirectX9.cpp" />
     <ClCompile Include="Source\GameObject\CGameObject.cpp" />
     <ClCompile Include="Source\GameObject\CSpriteObject\CSpriteObject.cpp" />
+    <ClCompile Include="Source\GameObject\StaticMeshObject\CAllAttackBase\CAllAttackBase.cpp" />
+    <ClCompile Include="Source\GameObject\StaticMeshObject\CAllAttackBase\CPlayerAttack\CPlayerAttack.cpp" />
+    <ClCompile Include="Source\GameObject\StaticMeshObject\CAllAttackManager\CAllAttackManager.cpp" />
     <ClCompile Include="Source\GameObject\StaticMeshObject\CCharacter\CCharacter.cpp" />
     <ClCompile Include="Source\GameObject\StaticMeshObject\CCharacter\Ground\CGround.cpp" />
     <ClCompile Include="Source\GameObject\StaticMeshObject\CCharacter\Player\CPlayer.cpp" />
@@ -195,6 +198,9 @@
     <ClInclude Include="Source\DirectX\CDirectX9.h" />
     <ClInclude Include="Source\GameObject\CGameObject.h" />
     <ClInclude Include="Source\GameObject\CSpriteObject\CSpriteObject.h" />
+    <ClInclude Include="Source\GameObject\StaticMeshObject\CAllAttackBase\CAllAttackBase.h" />
+    <ClInclude Include="Source\GameObject\StaticMeshObject\CAllAttackBase\CPlayerAttack\CPlayerAttack.h" />
+    <ClInclude Include="Source\GameObject\StaticMeshObject\CAllAttackManager\CAllAttackManager.h" />
     <ClInclude Include="Source\GameObject\StaticMeshObject\CCharacter\CCharacter.h" />
     <ClInclude Include="Source\GameObject\StaticMeshObject\CCharacter\Ground\CGround.h" />
     <ClInclude Include="Source\GameObject\StaticMeshObject\CCharacter\Player\CPlayer.h" />

@@ -37,6 +37,7 @@ public:
 	void Projection();
 
 	//三人称カメラ
+	// プレイヤーを上空から見下ろすようにカメラを調整します。
 	void ThirdPersonCamera(
 		CAMERA* pCamera, const D3DXVECTOR3& TargetPos, float TargetRotY);
 
@@ -56,7 +57,7 @@ private:
 	CStaticMesh* m_pStaticMeshBullet;	//弾 (現在使用されていません)
 	CStaticMesh* m_pStaticMeshBSphere;	//バウンディングスフィア(当たり判定用)
 	CStaticMesh* m_pStaticMeshBBox;		//バウンディングボックス(当たり判定用)
-	CStaticMesh* m_pStaticMeshWall;     //壁
+	CStaticMesh* m_pStaticMeshWall;		//壁
 
 	// m_pGameMain と m_pSpriteTitle は現在使用されていませんが、残しておきます
 	CStaticMesh* m_pGameMain;
@@ -65,15 +66,16 @@ private:
 	//スタティックメッシュオブジェクトクラス.
 	CStaticMeshObject* m_pStcMeshObj; // このメンバは現在使用されていません
 
-	std::vector<CStaticMeshObject*> m_Walls; // ★変更: m_Walls を std::vector で宣言
-
-
 	//キャラクタークラス
-	CCharacter* m_pPlayer; 
+	CCharacter* m_pPlayer;
 
 	//地面クラス.
 	CGround* m_pGround;
 	CDebugText* m_pDbgText;	//デバックテキスト.
 
+	// カメラの滑らかな追従のための変数
+	D3DXVECTOR3 m_vCameraTargetPosition;
+	D3DXVECTOR3 m_vCameraTargetLookAt;
+	float m_fCameraSmoothSpeed;
 
 };

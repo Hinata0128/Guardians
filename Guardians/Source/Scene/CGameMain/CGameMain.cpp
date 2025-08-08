@@ -25,6 +25,9 @@ CGameMain::CGameMain(CDirectX9* pDx9, CDirectX11* pDx11)
 
 	, m_pGround(nullptr)
 	, m_pDbgText(nullptr)
+	, m_vCameraTargetPosition(0.0f, 0.0f, 0.0f) // カメラターゲット位置の初期化
+	, m_vCameraTargetLookAt(0.0f, 0.0f, 0.0f)   // カメラターゲット注視点の初期化
+	, m_fCameraSmoothSpeed(0.05f)               // カメラ追従速度の初期化
 {
 	m_pDx11 = pDx11;
 	m_pDx9 = pDx9;
@@ -33,6 +36,7 @@ CGameMain::CGameMain(CDirectX9* pDx9, CDirectX11* pDx11)
 	CStaticMeshManager::GetInstance()->Create(*pDx9, *pDx11);
 
 	//カメラの位置を変更できるところ.
+	// 初期カメラ位置はInitialize()で設定されるため、ここではデフォルト値のままにします。
 	m_Camera.vPosition = D3DXVECTOR3(0.0f, 5.0f, -5.0f);
 	//カメラを見ているところを変更できるところ.
 	m_Camera.vLook = D3DXVECTOR3(0.0f, 2.0f, 5.0f);
@@ -54,13 +58,6 @@ CGameMain::~CGameMain()
 
 	//スタティックメッシュオブジェクトの破棄 (未使用だが一応)
 	SAFE_DELETE(m_pStcMeshObj);
-
-	// ★変更: 複数の壁オブジェクトを解放
-	for (auto it = m_Walls.rbegin(); it != m_Walls.rend(); ++it)
-	{
-		SAFE_DELETE(*it);
-	}
-	m_Walls.clear(); // vector の要素をクリア
 
 	//スタティックメッシュの破棄
 	SAFE_DELETE(m_pStaticMeshFighter); // ★追加: Fighterメッシュの解放
@@ -91,8 +88,16 @@ CGameMain::~CGameMain()
 void CGameMain::Initialize()
 {
 	// カメラの位置を初期化
-	m_Camera.vPosition = D3DXVECTOR3(0.0f, 5.0f, -5.0f);
-	m_Camera.vLook = D3DXVECTOR3(0.0f, 2.0f, 5.0f);
+	// ThirdPersonCameraで制御するため、ここでは特に設定しません
+	// m_Camera.vPosition = D3DXVECTOR3(0.0f, 5.0f, -5.0f);
+	// m_Camera.vLook = D3DXVECTOR3(0.0f, 2.0f, 5.0f);
+
+	// カメラの初期ターゲット位置と注視点を設定
+	// ここでの初期設定はCreate()で上書きされるため、デフォルト値のままでも問題ありません。
+	m_vCameraTargetPosition = D3DXVECTOR3(0.0f, 15.0f, -10.0f);
+	m_vCameraTargetLookAt = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_Camera.vPosition = m_vCameraTargetPosition;
+	m_Camera.vLook = m_vCameraTargetLookAt;
 }
 
 void CGameMain::Create()
@@ -140,43 +145,10 @@ void CGameMain::Create()
 	m_pStaticMeshWall->Init(*m_pDx9, *m_pDx11,
 		_T("Data\\Collision\\Box.x")); // Wallメッシュの読み込み
 
-	// ★変更: 複数の壁オブジェクトを生成し、vectorに追加
-	const int NUM_WALLS = 4; // 四方に壁を置くので4つ
-	m_Walls.reserve(NUM_WALLS); // 事前にメモリ確保 (任意)
-	for (int i = 0; i < NUM_WALLS; ++i)
-	{
-		m_Walls.push_back(new CStaticMeshObject());
-	}
-
 	const float STAGE_HALF_SIZE_X = 20.0f;
 	const float STAGE_HALF_SIZE_Z = 20.0f;
 	const float WALL_HEIGHT = 2.0f;
 	const float WALL_THICKNESS = 0.5f;
-
-	// 各壁の設定
-	// 1. 奥の壁 (+Z方向)
-	m_Walls[0]->AttachMesh(*m_pStaticMeshWall);
-	m_Walls[0]->SetScale(STAGE_HALF_SIZE_X * 2.0f + WALL_THICKNESS * 2.0f, WALL_HEIGHT, WALL_THICKNESS);
-	m_Walls[0]->SetPosition(0.0f, WALL_HEIGHT / 2.0f, STAGE_HALF_SIZE_Z + WALL_THICKNESS / 2.0f);
-	m_Walls[0]->CreateBBoxForMesh(*m_pStaticMeshWall); // BoundingBoxも作成
-
-	// 2. 手前の壁 (-Z方向)
-	m_Walls[1]->AttachMesh(*m_pStaticMeshWall);
-	m_Walls[1]->SetScale(STAGE_HALF_SIZE_X * 2.0f + WALL_THICKNESS * 2.0f, WALL_HEIGHT, WALL_THICKNESS);
-	m_Walls[1]->SetPosition(0.0f, WALL_HEIGHT / 2.0f, -STAGE_HALF_SIZE_Z - WALL_THICKNESS / 2.0f);
-	m_Walls[1]->CreateBBoxForMesh(*m_pStaticMeshWall); // BoundingBoxも作成
-
-	// 3. 左の壁 (-X方向)
-	m_Walls[2]->AttachMesh(*m_pStaticMeshWall);
-	m_Walls[2]->SetScale(WALL_THICKNESS, WALL_HEIGHT, STAGE_HALF_SIZE_Z * 2.0f);
-	m_Walls[2]->SetPosition(-STAGE_HALF_SIZE_X - WALL_THICKNESS / 2.0f, WALL_HEIGHT / 2.0f, 0.0f);
-	m_Walls[2]->CreateBBoxForMesh(*m_pStaticMeshWall); // BoundingBoxも作成
-
-	// 4. 右の壁 (+X方向)
-	m_Walls[3]->AttachMesh(*m_pStaticMeshWall);
-	m_Walls[3]->SetScale(WALL_THICKNESS, WALL_HEIGHT, STAGE_HALF_SIZE_Z * 2.0f);
-	m_Walls[3]->SetPosition(STAGE_HALF_SIZE_X + WALL_THICKNESS / 2.0f, WALL_HEIGHT / 2.0f, 0.0f);
-	m_Walls[3]->CreateBBoxForMesh(*m_pStaticMeshWall); // BoundingBoxも作成
 
 	//スタティックメッシュを設定.
 	m_pStcMeshObj->AttachMesh(*m_pStaticMeshFighter); // 未使用だが一応設定
@@ -202,6 +174,23 @@ void CGameMain::Create()
 
 	//キャラクターの初期座標を決定.
 	m_pPlayer->SetPosition(0.f, 1.f, 6.f);
+
+	// ★追加: ゲーム開始時にカメラの位置を即座に設定 (遅延をなくすため)
+	// ThirdPersonCameraのロジックをここで直接適用し、補間なしで初期化する
+	float cameraHeightOffset = 15.0f; // プレイヤーのY座標からの高さオフセット
+	float cameraBackOffset = 8.0f;   // プレイヤーの背後へのオフセット
+
+	// カメラの初期位置を設定
+	m_Camera.vPosition.x = m_pPlayer->GetPosition().x;
+	m_Camera.vPosition.y = m_pPlayer->GetPosition().y + cameraHeightOffset;
+	m_Camera.vPosition.z = m_pPlayer->GetPosition().z - cameraBackOffset;
+
+	// カメラの初期注視点をプレイヤーの中心に設定
+	m_Camera.vLook = m_pPlayer->GetPosition();
+
+	// カメラの目標位置と注視点も初期位置に合わせて更新しておく
+	m_vCameraTargetPosition = m_Camera.vPosition;
+	m_vCameraTargetLookAt = m_Camera.vLook;
 }
 
 void CGameMain::Update()
@@ -213,12 +202,6 @@ void CGameMain::Update()
 	//プレイヤーを更新し、そのBoundingBoxとBSphereも更新
 	m_pPlayer->Update();
 	m_pPlayer->UpdateBSpherePos(); // プレイヤーのBBoxとBSphereを更新 (衝突判定前に必要)
-
-	//三人称カメラ.
-	// CGame::ThirdPersonCamera(
-	//     &m_Camera,
-	//     m_pPlayer->GetPosition(),
-	//     m_pPlayer->GetRotation().y);
 
 	// 地面とプレイヤーの当たり判定.
 	BoundingBox* playerBBox = m_pPlayer->GetBBox();
@@ -237,70 +220,8 @@ void CGameMain::Update()
 		}
 	}
 
-	// ★変更: 複数の壁オブジェクトの更新とプレイヤーとのAABB衝突判定
-	for (auto& wall : m_Walls) {
-		wall->Update(); // 各壁オブジェクトを更新
-		wall->UpdateBSpherePos(); // ★追加: 壁のBBoxも更新 (衝突判定前に必要)
-	}
-
-	if (playerBBox) // プレイヤーのBBoxが有効な場合のみ壁との判定を行う
-	{
-		for (auto& wall : m_Walls)
-		{
-			BoundingBox* wallBBox = wall->GetBBox();
-
-			if (wallBBox && playerBBox->IsHit(*wallBBox))
-			{
-				OutputDebugStringA("Player hit A Wall!\n");
-
-				D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
-
-				const D3DXVECTOR3& playerMin = playerBBox->GetMinPosition();
-				const D3DXVECTOR3& playerMax = playerBBox->GetMaxPosition();
-				const D3DXVECTOR3& wallMin = wallBBox->GetMinPosition();
-				const D3DXVECTOR3& wallMax = wallBBox->GetMaxPosition();
-
-				float overlapX = 0.0f;
-				float overlapY = 0.0f;
-				float overlapZ = 0.0f;
-
-				if (playerMin.x < wallMax.x && playerMax.x > wallMin.x) {
-					overlapX = min(playerMax.x - wallMin.x, wallMax.x - playerMin.x);
-				}
-				if (playerMin.y < wallMax.y && playerMax.y > wallMin.y) {
-					overlapY = min(playerMax.y - wallMin.y, wallMax.y - playerMin.y);
-				}
-				if (playerMin.z < wallMax.z && playerMax.z > wallMin.z) {
-					overlapZ = min(playerMax.z - wallMin.z, wallMax.z - playerMin.z);
-				}
-
-				if (overlapX > 0 && (overlapX <= overlapZ || overlapZ == 0)) {
-					if (playerPos.x < wallBBox->GetCenter().x) {
-						playerPos.x = wallMin.x - (playerBBox->GetSize().x / 2.0f);
-					}
-					else {
-						playerPos.x = wallMax.x + (playerBBox->GetSize().x / 2.0f);
-					}
-				}
-				else if (overlapZ > 0 && (overlapZ < overlapX || overlapX == 0)) {
-					if (playerPos.z < wallBBox->GetCenter().z) {
-						playerPos.z = wallMin.z - (playerBBox->GetSize().z / 2.0f);
-					}
-					else {
-						playerPos.z = wallMax.z + (playerBBox->GetSize().z / 2.0f);
-					}
-				}
-				m_pPlayer->SetPosition(playerPos.x, playerPos.y, playerPos.z);
-				break; // 最初の壁との衝突応答でループを抜ける
-			}
-		}
-	}
-
-
-
-	// --- ボスの当たり判定コード修正終わり ---
-
-	//三人称カメラ
+	//三人称カメラを更新
+	// プレイヤーを上空から見下ろすようにカメラを調整します。
 	ThirdPersonCamera(
 		&m_Camera,
 		m_pPlayer->GetPosition(),
@@ -315,14 +236,6 @@ void CGameMain::Draw()
 
 	m_pGround->Draw(m_mView, m_mProj, m_Light, m_Camera);
 	m_pPlayer->Draw(m_mView, m_mProj, m_Light, m_Camera);
-
-	// ★変更: 複数の壁を描画
-	for (auto& wall : m_Walls)
-	{
-		wall->Draw(m_mView, m_mProj, m_Light, m_Camera);
-	}
-
-	// ★変更: BoundingBox/Sphere位置の更新はUpdate()に移動したのでここからは削除
 
 	// デバッグテキストの描画 (必要であれば)
 	TCHAR dbgText[256];
@@ -390,33 +303,29 @@ void CGameMain::Projection()
 		far_z);	//遠いビュー平面のz値.
 }
 
+// プレイヤーを上空から見下ろすようにカメラを調整する関数
 void CGameMain::ThirdPersonCamera(CAMERA* pCamera, const D3DXVECTOR3& TargetPos, float TargetRotY)
 {
-	//Z軸ベクトル（Z+方向の単位ベクトル）
-	D3DXVECTOR3 vecAxisZ(0.f, 0.f, 1.f);
+	// カメラの目標位置を計算
+	// プレイヤーの真上ではなく、少しプレイヤーの背後から見下ろすような位置
+	float cameraHeightOffset = 15.0f; // プレイヤーのY座標からの高さオフセット (変更)
+	float cameraBackOffset = 8.0f; // プレイヤーの背後へのオフセット (変更)
 
-	//Y方向の回転行列
-	D3DXMATRIX mRotationY;
-	//Y軸回転行列を作成
-	D3DXMatrixRotationY(
-		&mRotationY,	//(out)行列
-		TargetRotY);	//対象のY方向の回転値
+	// カメラの目標位置を設定
+	m_vCameraTargetPosition.x = TargetPos.x;
+	m_vCameraTargetPosition.y = TargetPos.y + cameraHeightOffset;
+	m_vCameraTargetPosition.z = TargetPos.z - cameraBackOffset; // プレイヤーの背後
 
-	//Y軸回転行列を使ってZ軸ベクトルを座標変換する
-	D3DXVec3TransformCoord(
-		&vecAxisZ,		//(out)Z軸ベクトル
-		&vecAxisZ,		//(in)Z軸ベクトル
-		&mRotationY);	//Y軸回転行列
+	// カメラの目標注視点をプレイヤーの中心に設定
+	m_vCameraTargetLookAt = TargetPos;
 
-	//カメラの位置、注視位置を対象にそろえる
-	pCamera->vPosition = TargetPos;
-	pCamera->vLook = TargetPos;
+	// 現在のカメラ位置と目標位置の間を滑らかに補間
+	pCamera->vPosition.x = pCamera->vPosition.x + (m_vCameraTargetPosition.x - pCamera->vPosition.x) * m_fCameraSmoothSpeed;
+	pCamera->vPosition.y = pCamera->vPosition.y + (m_vCameraTargetPosition.y - pCamera->vPosition.y) * m_fCameraSmoothSpeed;
+	pCamera->vPosition.z = pCamera->vPosition.z + (m_vCameraTargetPosition.z - pCamera->vPosition.z) * m_fCameraSmoothSpeed;
 
-	//カメラの位置、注視位置をZ軸ベクトルを用いて調整
-	pCamera->vPosition -= vecAxisZ * 4.f;	//対象の背中側
-	pCamera->vLook += vecAxisZ * 3.f;	//対象を挟んで向こう側
-
-	//カメラの位置、注視位置の高さをそれぞれ微調整
-	pCamera->vPosition.y += 2.f;
-	pCamera->vLook.y += 0.5f;
+	// 現在のカメラ注視点と目標注視点の間を滑らかに補間
+	pCamera->vLook.x = pCamera->vLook.x + (m_vCameraTargetLookAt.x - pCamera->vLook.x) * m_fCameraSmoothSpeed;
+	pCamera->vLook.y = pCamera->vLook.y + (m_vCameraTargetLookAt.y - pCamera->vLook.y) * m_fCameraSmoothSpeed;
+	pCamera->vLook.z = pCamera->vLook.z + (m_vCameraTargetLookAt.z - pCamera->vLook.z) * m_fCameraSmoothSpeed;
 }

@@ -7,23 +7,25 @@
 /**************************************************
 *	プレイヤークラス.
 **/
-class CPlayer
+class CPlayer final
 	: public CCharacter	//キャラクタークラスを継承.
 {
 public:
 	CPlayer();
-	virtual ~CPlayer() override;
+	~CPlayer() override;
 
-	virtual void Update() override;
-	virtual void Draw(
+	void Update() override;
+	void Draw(
 		D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, CAMERA& Camera) override;
 
 	void HandleGroundCollision(CStaticMeshObject* pGroundObject);
 
 protected:
-	float		m_MoveSpeed;	//移動速度.
-	float       m_TurnSpeed;    // 回転速度を追加
+	float m_MoveSpeed;    //移動速度.
+	float m_TurnSpeed;    //回転速度.
+	bool  m_Shot;
 
-	std::vector<std::unique_ptr<CPlayerAttack>> m_Attacks;
-	float m_ShotCoolTime;	//発射感覚の実装.
+	std::vector<std::unique_ptr<CPlayerAttack>> m_Attacks; // 弾の管理
+	float m_AttackCooldown; // クールタイム秒数
+	float m_AttackTimer;    // クールタイム残り時間
 };

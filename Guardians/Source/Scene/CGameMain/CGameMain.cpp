@@ -28,6 +28,9 @@ CGameMain::CGameMain(CDirectX9* pDx9, CDirectX11* pDx11)
 	, m_vCameraTargetPosition(0.0f, 0.0f, 0.0f) // カメラターゲット位置の初期化
 	, m_vCameraTargetLookAt(0.0f, 0.0f, 0.0f)   // カメラターゲット注視点の初期化
 	, m_fCameraSmoothSpeed(0.05f)               // カメラ追従速度の初期化
+
+
+	, m_pEnemyA		(nullptr)
 {
 	m_pDx11 = pDx11;
 	m_pDx9 = pDx9;
@@ -50,6 +53,8 @@ CGameMain::CGameMain(CDirectX9* pDx9, CDirectX11* pDx11)
 // デストラクタ.
 CGameMain::~CGameMain()
 {
+	SAFE_DELETE(m_pEnemyA);
+
 	//地面の破棄.
 	SAFE_DELETE(m_pGround);
 
@@ -175,6 +180,11 @@ void CGameMain::Create()
 	//キャラクターの初期座標を決定.
 	m_pPlayer->SetPosition(0.f, 1.f, 6.f);
 
+	m_pEnemyA = new CEnemyTypeA();
+	m_pEnemyA->SetPosition(0.f, 1.f, 5.f);
+	m_pEnemyA->SetPlayer(dynamic_cast<CPlayer*>(m_pPlayer));
+
+
 	// ★追加: ゲーム開始時にカメラの位置を即座に設定 (遅延をなくすため)
 	// ThirdPersonCameraのロジックをここで直接適用し、補間なしで初期化する
 	float cameraHeightOffset = 15.0f; // プレイヤーのY座標からの高さオフセット
@@ -191,6 +201,8 @@ void CGameMain::Create()
 	// カメラの目標位置と注視点も初期位置に合わせて更新しておく
 	m_vCameraTargetPosition = m_Camera.vPosition;
 	m_vCameraTargetLookAt = m_Camera.vLook;
+
+
 }
 
 void CGameMain::Update()
@@ -202,6 +214,8 @@ void CGameMain::Update()
 	//プレイヤーを更新し、そのBoundingBoxとBSphereも更新
 	m_pPlayer->Update();
 	m_pPlayer->UpdateBSpherePos(); // プレイヤーのBBoxとBSphereを更新 (衝突判定前に必要)
+
+	m_pEnemyA->Update();
 
 	// 地面とプレイヤーの当たり判定.
 	BoundingBox* playerBBox = m_pPlayer->GetBBox();
@@ -226,6 +240,7 @@ void CGameMain::Update()
 		&m_Camera,
 		m_pPlayer->GetPosition(),
 		m_pPlayer->GetRotation().y);
+
 }
 
 
@@ -264,6 +279,7 @@ void CGameMain::Draw()
 		m_pDbgText->Render(dbgText, 10, 90);
 	}
 
+	m_pEnemyA->Draw(m_mView, m_mProj, m_Light, m_Camera);
 }
 
 HRESULT CGameMain::LoadData()

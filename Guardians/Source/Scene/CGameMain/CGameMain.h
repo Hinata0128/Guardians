@@ -10,6 +10,8 @@
 #include "GameObject/StaticMeshObject/CStaticMeshObject.h" // CStaticMeshObjectを使用するために必要
 #include "StaticMash/CStaticMesh.h" // CStaticMeshを使用するために必要
 
+#include "..//..//GameObject/StaticMeshObject/CCharacter/Enemy/EnemyTypeA/CEnemyTypeA.h"
+
 #include <vector>
 
 
@@ -78,4 +80,5 @@ private:
 	D3DXVECTOR3 m_vCameraTargetLookAt;
 	float m_fCameraSmoothSpeed;
 
+	CEnemyTypeA* m_pEnemyA;
 };

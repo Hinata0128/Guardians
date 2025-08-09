@@ -166,6 +166,9 @@
     <ClCompile Include="Source\GameObject\StaticMeshObject\CAllAttackBase\CPlayerAttack\CPlayerAttack.cpp" />
     <ClCompile Include="Source\GameObject\StaticMeshObject\CAllAttackManager\CAllAttackManager.cpp" />
     <ClCompile Include="Source\GameObject\StaticMeshObject\CCharacter\CCharacter.cpp" />
+    <ClCompile Include="Source\GameObject\StaticMeshObject\CCharacter\EnemyManager\EnemyManager.cpp" />
+    <ClCompile Include="Source\GameObject\StaticMeshObject\CCharacter\Enemy\CEnemyBase.cpp" />
+    <ClCompile Include="Source\GameObject\StaticMeshObject\CCharacter\Enemy\EnemyTypeA\CEnemyTypeA.cpp" />
     <ClCompile Include="Source\GameObject\StaticMeshObject\CCharacter\Ground\CGround.cpp" />
     <ClCompile Include="Source\GameObject\StaticMeshObject\CCharacter\Player\CPlayer.cpp" />
     <ClCompile Include="Source\GameObject\StaticMeshObject\CStaticMeshObject.cpp" />
@@ -202,6 +205,9 @@
     <ClInclude Include="Source\GameObject\StaticMeshObject\CAllAttackBase\CPlayerAttack\CPlayerAttack.h" />
     <ClInclude Include="Source\GameObject\StaticMeshObject\CAllAttackManager\CAllAttackManager.h" />
     <ClInclude Include="Source\GameObject\StaticMeshObject\CCharacter\CCharacter.h" />
+    <ClInclude Include="Source\GameObject\StaticMeshObject\CCharacter\EnemyManager\EnemyManager.h" />
+    <ClInclude Include="Source\GameObject\StaticMeshObject\CCharacter\Enemy\CEnemyBase.h" />
+    <ClInclude Include="Source\GameObject\StaticMeshObject\CCharacter\Enemy\EnemyTypeA\CEnemyTypeA.h" />
     <ClInclude Include="Source\GameObject\StaticMeshObject\CCharacter\Ground\CGround.h" />
     <ClInclude Include="Source\GameObject\StaticMeshObject\CCharacter\Player\CPlayer.h" />
     <ClInclude Include="Source\GameObject\StaticMeshObject\CStaticMeshObject.h" />

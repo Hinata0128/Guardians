@@ -26,7 +26,7 @@ void CSceneManager::Update()
 	m_pScene->Update();
 }
 
-void CSceneManager::Drae()
+void CSceneManager::Draw()
 {
 	m_pScene->Draw();
 }

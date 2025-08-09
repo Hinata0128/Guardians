@@ -69,7 +69,7 @@ void CGame::Update()
 
 void CGame::Draw()
 {
-	CSceneManager::GetInstance()->Drae();
+	CSceneManager::GetInstance()->Draw();
 
 }
 

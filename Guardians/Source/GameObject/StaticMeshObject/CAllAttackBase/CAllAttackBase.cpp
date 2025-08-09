@@ -1,6 +1,7 @@
 #include "CAllAttackBase.h"
 
-CAllAttackBase::CAllAttackBase()
+CAllAttackBase::CAllAttackBase(const std::string& name)
+	: m_strName (name) 
 {
 }
 

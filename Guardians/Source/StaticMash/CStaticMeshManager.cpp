@@ -27,7 +27,8 @@ void CStaticMeshManager::Create(CDirectX9& pDx9, CDirectX11& pDx11)
 	{
 		{CMeshList::Player, _T("Data\\Mesh\\Static\\Fighter\\Fighter.x")},
 		{CMeshList::Collision, 	_T("Data\\Collision\\Sphere.x")},
-		{CMeshList::Collision, 	_T("Data\\Mesh\\Static\\Enemy\\block.x")},
+		{CMeshList::Enemy, 	_T("Data\\Mesh\\Static\\Enemy\\block.x")},
+		{CMeshList::PAttack, 	_T("Data\\Mesh\\Static\\Bullet\\bullet.x")},
 	};
 	int list_max = sizeof(MList) / sizeof(MList[0]);
 	for (int i = 0; i < list_max; ++i)

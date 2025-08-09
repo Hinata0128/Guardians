@@ -14,6 +14,7 @@ public:
 		Player,
 		Collision,
 		Enemy, 
+		PAttack,
 
 		max,
 	};

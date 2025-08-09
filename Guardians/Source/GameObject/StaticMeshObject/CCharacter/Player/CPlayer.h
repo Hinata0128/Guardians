@@ -2,6 +2,8 @@
 
 #include "GameObject/StaticMeshObject/CCharacter/CCharacter.h"
 
+#include "..//..//CAllAttackBase/CPlayerAttack/CPlayerAttack.h"
+
 /**************************************************
 *	プレイヤークラス.
 **/
@@ -21,4 +23,7 @@ public:
 protected:
 	float		m_MoveSpeed;	//移動速度.
 	float       m_TurnSpeed;    // 回転速度を追加
+
+	std::vector<std::unique_ptr<CPlayerAttack>> m_Attacks;
+	float m_ShotCoolTime;	//発射感覚の実装.
 };

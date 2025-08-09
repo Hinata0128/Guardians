@@ -13,3 +13,7 @@
 #include <Windows.h>
 #include "Global.h"
 #include "MyMacro.h"
+
+#include <vector>
+#include <string>
+#include <memory>

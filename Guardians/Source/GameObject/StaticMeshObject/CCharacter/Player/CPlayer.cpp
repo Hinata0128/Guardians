@@ -27,6 +27,8 @@ void CPlayer::Update()
 	if (GetAsyncKeyState(VK_DOWN) & 0x8000) { moveDirection.z -= 1.0f; }
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000) { moveDirection.x += 1.0f; }
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000) { moveDirection.x -= 1.0f; }
+	if (GetAsyncKeyState('W') & 0x8000) { m_vPosition.y += 1.0f; }
+	if (GetAsyncKeyState('S') & 0x8000) { m_vPosition.y -= 1.0f; }
 
 	if (D3DXVec3LengthSq(&moveDirection) > 0)
 	{

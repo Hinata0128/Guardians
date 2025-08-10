@@ -1,18 +1,18 @@
 #pragma once
 #include "Scene/CSceneBase.h"
-#include "GameObject/CSpriteObject/CSpriteObject.h"
-#include "SceneManager/CSceneManager.h"
+#include "GameObject/CSpriteObject/CSpriteObject.h" // CSpriteObjectを直接使用している箇所はないが、残しておく
+#include "SceneManager/CSceneManager.h" // CSceneManagerを使用していないが、残しておく
 
 #include "GameObject/StaticMeshObject/CCharacter/Ground/CGround.h"
 #include "GameObject/StaticMeshObject/CCharacter/Player/CPlayer.h"
 #include "DebugText/CDebugText.h"
-#include "GameObject/StaticMeshObject/CCharacter/CCharacter.h"
+#include "GameObject/StaticMeshObject/CCharacter/CCharacter.h" // CCharacterを使用するために必要
 #include "GameObject/StaticMeshObject/CStaticMeshObject.h" // CStaticMeshObjectを使用するために必要
 #include "StaticMash/CStaticMesh.h" // CStaticMeshを使用するために必要
 
-#include "..//..//GameObject/StaticMeshObject/CCharacter/Enemy/EnemyTypeA/CEnemyTypeA.h"
+#include "..//..//GameObject/StaticMeshObject/CCharacter/Enemy/EnemyTypeA/CEnemyTypeA.h" // CEnemyTypeAを使用するために必要
 
-#include <vector>
+#include <vector> // std::vectorを使用するために必要
 
 
 /*********************************************
@@ -81,4 +81,6 @@ private:
 	float m_fCameraSmoothSpeed;
 
 	CEnemyTypeA* m_pEnemyA;
+
+	std::vector<CStaticMeshObject*> m_pWalls; // ★追加: 壁オブジェクトのリスト
 };

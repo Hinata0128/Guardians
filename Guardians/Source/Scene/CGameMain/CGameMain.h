@@ -1,19 +1,19 @@
 #pragma once
 #include "Scene/CSceneBase.h"
-#include "GameObject/CSpriteObject/CSpriteObject.h" // CSpriteObjectを直接使用している箇所はないが、残しておく
-#include "SceneManager/CSceneManager.h" // CSceneManagerを使用していないが、残しておく
+#include "GameObject/CSpriteObject/CSpriteObject.h"
+#include "SceneManager/CSceneManager.h"
 
 #include "GameObject/StaticMeshObject/CCharacter/Ground/CGround.h"
 #include "GameObject/StaticMeshObject/CCharacter/Player/CPlayer.h"
 #include "DebugText/CDebugText.h"
-#include "GameObject/StaticMeshObject/CCharacter/CCharacter.h" // CCharacterを使用するために必要
-#include "GameObject/StaticMeshObject/CStaticMeshObject.h" // CStaticMeshObjectを使用するために必要
-#include "StaticMash/CStaticMesh.h" // CStaticMeshを使用するために必要
+#include "GameObject/StaticMeshObject/CCharacter/CCharacter.h"
+#include "GameObject/StaticMeshObject/CStaticMeshObject.h"
+#include "StaticMash/CStaticMesh.h"
 
-#include "..//..//GameObject/StaticMeshObject/CCharacter/Enemy/EnemyTypeA/CEnemyTypeA.h" // CEnemyTypeAを使用するために必要
+#include "..//..//GameObject/StaticMeshObject/CCharacter/EnemyManager/CEnemyManager.h"
 
-#include <vector> // std::vectorを使用するために必要
-
+#include <vector>
+#include <random>
 
 /*********************************************
 *	ゲームメイン画像クラス.
@@ -33,54 +33,47 @@ public:
 
 	HRESULT LoadData();
 
-	//カメラ関数.
 	void Camera();
-	//プロジェクション関数.
 	void Projection();
 
-	//三人称カメラ
-	// プレイヤーを上空から見下ろすようにカメラを調整します。
 	void ThirdPersonCamera(
 		CAMERA* pCamera, const D3DXVECTOR3& TargetPos, float TargetRotY);
 
 
 private:
+	CSprite3D* m_pSp3D;
+	CSprite3D* m_pSpriteGround;
+	CSprite3D* m_pSpriteExplosion;
 
-	//ゲームで扱うスプライトデータ(使いまわす資源).
-	CSprite3D* m_pSp3D; // このメンバは現在使用されていないようです
-	CSprite3D* m_pSpriteGround; // 現在のコードでは使用されていませんが、残しておきます
-	CSprite3D* m_pSpriteExplosion; // 現在のコードでは使用されていませんが、残しておきます
+	CStaticMesh* m_pStaticMeshGround;
+	CStaticMesh* m_pStaticMeshFighter;
+	CStaticMesh* m_pStaticMeshRoboA;
+	CStaticMesh* m_pStaticMeshRoboB;
+	CStaticMesh* m_pStaticMeshBullet;
+	CStaticMesh* m_pStaticMeshBSphere;
+	CStaticMesh* m_pStaticMeshBBox;
+	CStaticMesh* m_pStaticMeshWall;
 
-	//スタティックメッシュ(使いまわす資源).
-	CStaticMesh* m_pStaticMeshGround;	//地面
-	CStaticMesh* m_pStaticMeshFighter;	//プレイヤーのメッシュ
-	CStaticMesh* m_pStaticMeshRoboA;		//ロボA (現在使用されていません)
-	CStaticMesh* m_pStaticMeshRoboB;		//ロボB (現在使用されていません)
-	CStaticMesh* m_pStaticMeshBullet;	//弾 (現在使用されていません)
-	CStaticMesh* m_pStaticMeshBSphere;	//バウンディングスフィア(当たり判定用)
-	CStaticMesh* m_pStaticMeshBBox;		//バウンディングボックス(当たり判定用)
-	CStaticMesh* m_pStaticMeshWall;		//壁
-
-	// m_pGameMain と m_pSpriteTitle は現在使用されていませんが、残しておきます
 	CStaticMesh* m_pGameMain;
 	CSprite2D* m_pSpriteTitle;
 
-	//スタティックメッシュオブジェクトクラス.
-	CStaticMeshObject* m_pStcMeshObj; // このメンバは現在使用されていません
+	CStaticMeshObject* m_pStcMeshObj;
 
-	//キャラクタークラス
 	CCharacter* m_pPlayer;
 
-	//地面クラス.
 	CGround* m_pGround;
-	CDebugText* m_pDbgText;	//デバックテキスト.
+	CDebugText* m_pDbgText;
 
-	// カメラの滑らかな追従のための変数
 	D3DXVECTOR3 m_vCameraTargetPosition;
 	D3DXVECTOR3 m_vCameraTargetLookAt;
 	float m_fCameraSmoothSpeed;
 
-	CEnemyTypeA* m_pEnemyA;
+	CEnemyManager* m_pEnemyManager;
+	std::vector<CStaticMeshObject*> m_pWalls;
 
-	std::vector<CStaticMeshObject*> m_pWalls; // ★追加: 壁オブジェクトのリスト
+	// 時間経過で敵を出現させるためのメンバー変数
+	int m_EnemySpawnTimer;
+	const int m_EnemySpawnInterval = 180; // 3秒
+	const int m_MaxEnemyCount = 3;
+	int m_CurrentEnemyCount;
 };

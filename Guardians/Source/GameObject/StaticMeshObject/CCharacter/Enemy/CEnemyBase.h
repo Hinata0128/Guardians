@@ -22,6 +22,10 @@ public:
 	// プレイヤーのポインタを設定する関数
 	void SetPlayer(CPlayer* player);
 
+	void UpdateLifetime();
+	float GetLifetime() const { return m_fLifetime; }
+
 protected:
 	CPlayer* m_pPlayer;
+	float m_fLifetime = 0.0f;
 };

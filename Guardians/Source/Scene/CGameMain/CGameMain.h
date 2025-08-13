@@ -74,6 +74,6 @@ private:
 	// 時間経過で敵を出現させるためのメンバー変数
 	int m_EnemySpawnTimer;
 	const int m_EnemySpawnInterval = 180; // 3秒
-	const int m_MaxEnemyCount = 3;
-	int m_CurrentEnemyCount;
+	/*const int m_MaxEnemyCount = 3;
+	int m_CurrentEnemyCount;*/
 };

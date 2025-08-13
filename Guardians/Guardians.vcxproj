@@ -156,6 +156,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\Collision\BoundingBox\BoundingBox.cpp" />
+    <ClCompile Include="Source\Collision\CAllCollision\CAllCollision.cpp" />
     <ClCompile Include="Source\Collision\CBoundingSphere\CBoundingSphere.cpp" />
     <ClCompile Include="Source\DebugText\CDebugText.cpp" />
     <ClCompile Include="Source\DirectX\CDirectX11.cpp" />
@@ -195,6 +196,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Collision\BoundingBox\BoundingBox.h" />
+    <ClInclude Include="Source\Collision\CAllCollision\CAllCollision.h" />
     <ClInclude Include="Source\Collision\CBoundingSphere\CBoundingSphere.h" />
     <ClInclude Include="Source\DebugText\CDebugText.h" />
     <ClInclude Include="Source\DirectX\CDirectX11.h" />

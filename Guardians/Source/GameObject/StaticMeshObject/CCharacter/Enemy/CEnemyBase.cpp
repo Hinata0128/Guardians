@@ -21,3 +21,8 @@ void CEnemyBase::SetPlayer(CPlayer* player)
 {
 	m_pPlayer = player;
 }
+
+void CEnemyBase::UpdateLifetime()
+{
+	m_fLifetime += 1.0f / 60.0f; // 60FPS‚ð‘z’è
+}

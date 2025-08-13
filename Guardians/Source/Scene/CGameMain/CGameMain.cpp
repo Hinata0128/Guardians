@@ -34,7 +34,7 @@ CGameMain::CGameMain(CDirectX9* pDx9, CDirectX11* pDx11)
 	, m_pEnemyManager(nullptr)
 	, m_pWalls()
 	, m_EnemySpawnTimer(0) // タイマーを初期化
-	, m_CurrentEnemyCount(0) // カウントを初期化
+	// , m_CurrentEnemyCount(0) // カウントを初期化
 {
 	m_pDx11 = pDx11;
 	m_pDx9 = pDx9;
@@ -188,33 +188,30 @@ void CGameMain::Update()
 
 	m_pEnemyManager->Update();
 
-	// 時間経過で敵を出現させるロジック
-	if (m_CurrentEnemyCount < m_MaxEnemyCount)
+	// 時間経過で敵を無限に出現させるロジック
+	m_EnemySpawnTimer++;
+
+	if (m_EnemySpawnTimer >= m_EnemySpawnInterval)
 	{
-		m_EnemySpawnTimer++;
+		const float STAGE_HALF_SIZE_X = 20.0f;
+		const float STAGE_HALF_SIZE_Z = 20.0f;
+		const float ENEMY_Y_POS = 1.0f;
 
-		if (m_EnemySpawnTimer >= m_EnemySpawnInterval)
-		{
-			const float STAGE_HALF_SIZE_X = 20.0f;
-			const float STAGE_HALF_SIZE_Z = 20.0f;
-			const float ENEMY_Y_POS = 1.0f;
+		std::random_device rnd;
+		std::mt19937 mt(rnd());
+		std::uniform_real_distribution<> randX(-STAGE_HALF_SIZE_X, STAGE_HALF_SIZE_X);
+		std::uniform_real_distribution<> randZ(-STAGE_HALF_SIZE_Z, STAGE_HALF_SIZE_Z);
 
-			std::random_device rnd;
-			std::mt19937 mt(rnd());
-			std::uniform_real_distribution<> randX(-STAGE_HALF_SIZE_X, STAGE_HALF_SIZE_X);
-			std::uniform_real_distribution<> randZ(-STAGE_HALF_SIZE_Z, STAGE_HALF_SIZE_Z);
+		m_pEnemyManager->CreateEnemy(
+			CEnemyManager::EnemyType::EnemyA,
+			static_cast<float>(randX(mt)),
+			ENEMY_Y_POS,
+			static_cast<float>(randZ(mt)),
+			dynamic_cast<CPlayer*>(m_pPlayer)
+		);
 
-			m_pEnemyManager->CreateEnemy(
-				CEnemyManager::EnemyType::EnemyA,
-				static_cast<float>(randX(mt)),
-				ENEMY_Y_POS,
-				static_cast<float>(randZ(mt)),
-				dynamic_cast<CPlayer*>(m_pPlayer)
-			);
-
-			m_EnemySpawnTimer = 0;
-			m_CurrentEnemyCount++;
-		}
+		m_EnemySpawnTimer = 0;
+		// m_CurrentEnemyCount は使わないため、インクリメントする行を削除
 	}
 
 	BoundingBox* playerBBox = m_pPlayer->GetBBox();
